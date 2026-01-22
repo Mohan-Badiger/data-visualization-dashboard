@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-light-bg text-light-text-primary dark:bg-dark-bg dark:text-dark-text-primary transition-colors duration-200;
+  }
+}
+
+/* Custom D3 Styles - Theme Aware */
+.chart-axis text {
+  @apply fill-gray-500 dark:fill-gray-400;
+}
+
+.chart-axis line,
+.chart-axis path {
+  @apply stroke-gray-300 dark:stroke-gray-700;
+}
+
+.chart-grid line {
+  @apply stroke-gray-200 dark:stroke-gray-800;
+}
+
+.tooltip {
+  @apply absolute z-50 bg-white dark:bg-dark-card p-3 rounded-lg shadow-xl text-sm border border-light-border dark:border-dark-border pointer-events-none opacity-0 transition-opacity whitespace-pre;
+}
