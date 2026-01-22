@@ -2,60 +2,120 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================= */
+/* Theme Variables               */
+/* ============================= */
 @layer base {
   :root {
-    /* Light Theme Tokens */
-    --color-bg: #F3F4F6;
-    --color-card: #FFFFFF;
-    --color-text-primary: #1F2937;
-    --color-text-secondary: #6B7280;
-    --color-border: #E5E7EB;
+    /* Light Theme */
+    --color-bg: #f3f4f6;
+    --color-card: #ffffff;
+    --color-text-primary: #1f2937;
+    --color-text-secondary: #6b7280;
+    --color-border: #e5e7eb;
 
-    /* Primary */
-    --color-primary: #3B82F6;
-    --color-primary-hover: #2563EB;
+    --color-primary: #3b82f6;
+    --color-primary-hover: #2563eb;
   }
 
   .dark {
-    /* Dark Theme Tokens */
-    --color-bg: #0F172A;
-    --color-card: #1E293B;
-    --color-text-primary: #F8FAFC;
-    --color-text-secondary: #94A3B8;
+    /* Dark Theme */
+    --color-bg: #0f172a;
+    --color-card: #1e293b;
+    --color-text-primary: #f8fafc;
+    --color-text-secondary: #94a3b8;
     --color-border: #334155;
   }
 
   body {
     background-color: var(--color-bg);
     color: var(--color-text-primary);
-    /* Removed transition-colors duration-200 to prevent lag/staggering. 
-       Can be re-added via a controlled class if specific fades are needed. */
   }
 }
 
-/* Custom D3 Styles - Theme Aware - utilizing CSS vars via utility classes or direct */
+/* ============================= */
+/* App Utility Classes (IMPORTANT) */
+/* ============================= */
+@layer utilities {
+  .bg-app-bg {
+    background-color: var(--color-bg);
+  }
+
+  .bg-app-card {
+    background-color: var(--color-card);
+  }
+
+  .text-app-text-primary {
+    color: var(--color-text-primary);
+  }
+
+  .text-app-text-secondary {
+    color: var(--color-text-secondary);
+  }
+
+  .border-app-border {
+    border-color: var(--color-border);
+  }
+}
+
+/* ============================= */
+/* FORCE DROPDOWN BACKGROUNDS    */
+/* ============================= */
+.menu-solid {
+  background-color: var(--color-card) !important;
+  border: 1px solid var(--color-border);
+  backdrop-filter: none !important;
+}
+
+/* ============================= */
+/* Charts                        */
+/* ============================= */
 .chart-axis text {
-  @apply fill-gray-500 dark:fill-gray-400;
-  /* Keeping explicit utility for charts as they are less structural */
+  fill: #6b7280;
+}
+
+.dark .chart-axis text {
+  fill: #94a3b8;
 }
 
 .chart-axis line,
 .chart-axis path {
-  @apply stroke-gray-300 dark:stroke-gray-700;
+  stroke: #d1d5db;
+}
+
+.dark .chart-axis line,
+.dark .chart-axis path {
+  stroke: #334155;
 }
 
 .chart-grid line {
-  @apply stroke-gray-200 dark:stroke-gray-800;
+  stroke: #e5e7eb;
 }
 
+.dark .chart-grid line {
+  stroke: #1e293b;
+}
+
+/* ============================= */
+/* Tooltip                       */
+/* ============================= */
 .tooltip {
-  @apply absolute z-50 p-3 rounded-lg shadow-xl text-sm border pointer-events-none opacity-0 transition-opacity whitespace-pre;
+  position: absolute;
+  z-index: 50;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
   background-color: var(--color-card);
-  border-color: var(--color-border);
   color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
 }
 
-/* Scrollbar */
+/* ============================= */
+/* Scrollbar (Modern)            */
+/* ============================= */
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(100, 116, 139, 0.5) transparent;
@@ -72,14 +132,15 @@
 ::-webkit-scrollbar-thumb {
   background: rgba(100, 116, 139, 0.5);
   border-radius: 9999px;
-  transition: background 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 116, 139, 0.8);
 }
 
-/* Utility to disable transitions globally during theme switch */
+/* ============================= */
+/* Disable transitions on theme switch */
+/* ============================= */
 .disable-transitions * {
   transition: none !important;
 }
