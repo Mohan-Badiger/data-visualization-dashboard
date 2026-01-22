@@ -87,7 +87,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                                     </button>
                                 </div>
                                 <div className="flex-shrink-0 flex items-center justify-center h-16 bg-light-card dark:bg-dark-card border-b border-light-border dark:border-dark-border">
-                                    <span className="text-xl font-bold text-light-text-primary dark:text-white tracking-wider">BLACKCOFFER</span>
+                                    <Link to="/" className="text-xl font-bold text-light-text-primary dark:text-white tracking-wider hover:text-primary transition-colors cursor-pointer">
+                                        BLACKCOFFER
+                                    </Link>
                                 </div>
                                 <NavItems />
                             </Dialog.Panel>
@@ -103,7 +105,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
             <div className="hidden md:flex md:flex-shrink-0">
                 <div className="flex flex-col w-64 bg-light-card dark:bg-dark-card border-r border-light-border dark:border-dark-border shadow-sm z-20 transition-colors duration-200">
                     <div className="flex items-center justify-center h-16 bg-light-card dark:bg-dark-card border-b border-light-border dark:border-dark-border">
-                        <span className="text-xl font-bold text-light-text-primary dark:text-dark-text-primary tracking-wider">BLACKCOFFER</span>
+                        <Link to="/" className="text-xl font-bold text-light-text-primary dark:text-dark-text-primary tracking-wider hover:text-primary transition-colors cursor-pointer">
+                            BLACKCOFFER
+                        </Link>
                     </div>
                     <NavItems />
                 </div>

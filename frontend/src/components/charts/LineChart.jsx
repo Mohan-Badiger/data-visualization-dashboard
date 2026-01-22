@@ -25,9 +25,16 @@ const LineChart = ({ data }) => {
         const width = 600 - margin.left - margin.right;
         const height = 300 - margin.top - margin.bottom;
 
-        d3.select(svgRef.current).selectAll("*").remove();
+        const svgEl = d3.select(svgRef.current);
+        svgEl.selectAll("*").remove();
 
-        const svg = d3.select(svgRef.current)
+        // Create Tooltip
+        const tooltip = d3.select("body")
+            .append("div")
+            .attr("class", "absolute z-50 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 dark:bg-gray-700 pointer-events-none")
+            .style("opacity", 0);
+
+        const svg = svgEl
             .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -40,27 +47,27 @@ const LineChart = ({ data }) => {
             .domain([0, d3.max(chartData, d => d.intensity) || 10])
             .range([height, 0]);
 
-        // Add X Gridlines
+        // Add X Gridlines (Subtle)
         svg.append("g")
-            .attr("class", "chart-grid")
+            .attr("class", "chart-grid opacity-10")
             .attr("transform", `translate(0,${height})`)
             .call(d3.axisBottom(x).tickSize(-height).tickFormat("").ticks(5))
             .select(".domain").remove();
 
-        // Add Y Gridlines
+        // Add Y Gridlines (Subtle)
         svg.append("g")
-            .attr("class", "chart-grid")
+            .attr("class", "chart-grid opacity-10")
             .call(d3.axisLeft(y).tickSize(-width).tickFormat("").ticks(5))
             .select(".domain").remove();
 
         // Axes
         svg.append("g")
-            .attr("class", "chart-axis")
+            .attr("class", "chart-axis text-gray-500 dark:text-gray-400 font-medium")
             .attr("transform", `translate(0,${height})`)
             .call(d3.axisBottom(x).tickFormat(d3.format("d")).ticks(5));
 
         svg.append("g")
-            .attr("class", "chart-axis")
+            .attr("class", "chart-axis text-gray-500 dark:text-gray-400 font-medium")
             .call(d3.axisLeft(y).ticks(5));
 
         const line = d3.line()
@@ -68,15 +75,23 @@ const LineChart = ({ data }) => {
             .y(d => y(d.intensity))
             .curve(d3.curveMonotoneX);
 
-        svg.append("path")
+        // Path Animation
+        const path = svg.append("path")
             .datum(chartData)
             .attr("fill", "none")
             .attr("stroke", "#3B82F6") // Blue-500
             .attr("stroke-width", 3)
             .attr("d", line)
-            .attr("filter", "drop-shadow(0px 4px 6px rgba(59, 130, 246, 0.3))");
+            .attr("filter", "drop-shadow(0px 4px 6px rgba(59, 130, 246, 0.3))")
+            .attr("stroke-dasharray", function () { return this.getTotalLength(); })
+            .attr("stroke-dashoffset", function () { return this.getTotalLength(); });
 
-        svg.selectAll(".dot")
+        path.transition()
+            .duration(1500)
+            .ease(d3.easeCubicOut)
+            .attr("stroke-dashoffset", 0);
+
+        const dots = svg.selectAll(".dot")
             .data(chartData)
             .enter()
             .append("circle")
@@ -86,14 +101,54 @@ const LineChart = ({ data }) => {
             .attr("fill", "#3B82F6")
             .attr("stroke", "#fff")
             .attr("stroke-width", 2)
-            .attr("class", "dark:stroke-dark-card")
-            .append("title")
-            .text(d => `Year: ${d.year}\nIntensity: ${d.intensity.toFixed(1)}`);
+            .attr("class", "dark:stroke-dark-card cursor-pointer")
+            .attr("opacity", 0); // Start hidden for animation
+
+        dots.transition()
+            .delay((d, i) => 1000 + i * 50) // Staggered appearance after line starts
+            .duration(300)
+            .attr("opacity", 1);
+
+        // Tooltip Interaction
+        dots.on("mouseenter", function (event, d) {
+            d3.select(this)
+                .transition().duration(200)
+                .attr("r", 8)
+                .attr("stroke", "#3B82F6")
+                .attr("stroke-width", 3);
+
+            tooltip.transition().duration(200).style("opacity", 1);
+            tooltip.html(`
+                <div class="font-bold">Year: ${d.year}</div>
+                <div>Intensity: <span class="text-blue-300">${d.intensity.toFixed(1)}</span></div>
+             `)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 28) + "px");
+        })
+            .on("mousemove", function (event) {
+                tooltip
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseleave", function () {
+                d3.select(this)
+                    .transition().duration(200)
+                    .attr("r", 5)
+                    .attr("stroke", "#fff")
+                    .attr("stroke-width", 2);
+
+                tooltip.transition().duration(200).style("opacity", 0);
+            });
+
+        // Cleanup function to remove tooltip from body
+        return () => {
+            tooltip.remove();
+        };
 
     }, [data]);
 
     return (
-        <div className="bg-light-card dark:bg-dark-card rounded-xl p-4 h-full">
+        <div className="bg-light-card dark:bg-dark-card rounded-xl p-4 h-full shadow-lg border border-light-border dark:border-dark-border">
             <h4 className="text-lg font-bold text-light-text-primary dark:text-dark-text-primary mb-4">Intensity Trend</h4>
             <div className="relative h-64 w-full">
                 {(!data || data.length === 0) ? (

@@ -100,17 +100,29 @@ const Dashboard = () => {
 
             {/* Charts Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-light-card dark:bg-dark-card rounded-xl shadow-sm p-1 border border-light-border dark:border-dark-border transition-transform hover:scale-[1.01] duration-300">
+                {/* Line Chart - Full Width on Large Screens for better trend visibility */}
+                <div className="lg:col-span-2 bg-light-card dark:bg-dark-card rounded-xl shadow-sm p-1 border border-light-border dark:border-dark-border transition-transform hover:scale-[1.005] duration-300">
                     <LineChart data={data} />
                 </div>
+
+                {/* Bar Chart - Likelihood by Country */}
                 <div className="bg-light-card dark:bg-dark-card rounded-xl shadow-sm p-1 border border-light-border dark:border-dark-border transition-transform hover:scale-[1.01] duration-300">
                     <BarChart data={data} />
                 </div>
+
+                {/* Bubble Chart - Relevance vs Likelihood */}
                 <div className="bg-light-card dark:bg-dark-card rounded-xl shadow-sm p-1 border border-light-border dark:border-dark-border transition-transform hover:scale-[1.01] duration-300">
                     <BubbleChart data={data} />
                 </div>
+
+                {/* Pie Chart 1 - Sector Distribution */}
                 <div className="bg-light-card dark:bg-dark-card rounded-xl shadow-sm p-1 border border-light-border dark:border-dark-border transition-transform hover:scale-[1.01] duration-300">
-                    <PieChart data={data} />
+                    <PieChart data={data} field="sector" title="Sector Distribution" />
+                </div>
+
+                {/* Pie Chart 2 - Region Distribution (New) */}
+                <div className="bg-light-card dark:bg-dark-card rounded-xl shadow-sm p-1 border border-light-border dark:border-dark-border transition-transform hover:scale-[1.01] duration-300">
+                    <PieChart data={data} field="region" title="Region Distribution" />
                 </div>
             </div>
 

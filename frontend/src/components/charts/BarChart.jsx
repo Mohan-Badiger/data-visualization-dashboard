@@ -12,7 +12,7 @@ const BarChart = ({ data }) => {
 
         const processedData = d3.rollup(
             data.filter(d => d.country),
-            v => d3.mean(v, d => d.likelihood),
+            v => d3.sum(v, d => (d.likelihood || 0) * (d.relevance || 1)), // Weighted Likelihood
             d => d.country
         );
 
@@ -26,9 +26,16 @@ const BarChart = ({ data }) => {
         const width = 600 - margin.left - margin.right;
         const height = 300 - margin.top - margin.bottom;
 
-        d3.select(svgRef.current).selectAll("*").remove();
+        const svgEl = d3.select(svgRef.current);
+        svgEl.selectAll("*").remove();
 
-        const svg = d3.select(svgRef.current)
+        // Tooltip
+        const tooltip = d3.select("body")
+            .append("div")
+            .attr("class", "absolute z-50 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 dark:bg-gray-700 pointer-events-none")
+            .style("opacity", 0);
+
+        const svg = svgEl
             .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -38,13 +45,14 @@ const BarChart = ({ data }) => {
             .domain(chartData.map(d => d.country))
             .padding(0.4);
 
+        const maxVal = d3.max(chartData, d => d.likelihood) || 10;
         const y = d3.scaleLinear()
-            .domain([0, 5])
+            .domain([0, maxVal * 1.1]) // Add some padding
             .range([height, 0]);
 
         // X Axis
         svg.append("g")
-            .attr("class", "chart-axis")
+            .attr("class", "chart-axis text-gray-500 dark:text-gray-400 font-medium")
             .attr("transform", `translate(0,${height})`)
             .call(d3.axisBottom(x))
             .selectAll("text")
@@ -53,8 +61,8 @@ const BarChart = ({ data }) => {
 
         // Y Axis
         svg.append("g")
-            .attr("class", "chart-axis")
-            .call(d3.axisLeft(y));
+            .attr("class", "chart-axis text-gray-500 dark:text-gray-400 font-medium")
+            .call(d3.axisLeft(y).ticks(5));
 
         // Gradient
         const defs = svg.append("defs");
@@ -67,30 +75,67 @@ const BarChart = ({ data }) => {
         gradient.append("stop").attr("offset", "0%").attr("stop-color", "#3B82F6"); // Blue-500
         gradient.append("stop").attr("offset", "100%").attr("stop-color", "#60A5FA"); // Blue-400
 
+        // Bars
         svg.selectAll("mybar")
             .data(chartData)
             .enter()
             .append("rect")
             .attr("x", d => x(d.country))
-            .attr("y", d => y(d.likelihood))
             .attr("width", x.bandwidth())
-            .attr("height", d => height - y(d.likelihood))
-            .attr("rx", 4)
             .attr("fill", "url(#bar-gradient)")
+            .attr("rx", 4)
+            .attr("class", "cursor-pointer")
+            // Initial State (height 0)
+            .attr("y", height)
+            .attr("height", 0)
+            // Animation
+            .transition()
+            .duration(800)
+            .ease(d3.easeCubicOut)
+            .delay((d, i) => i * 100) // Staggered
+            .attr("y", d => y(d.likelihood))
+            .attr("height", d => height - y(d.likelihood));
+
+        // Interactions (must re-select after transition)
+        svg.selectAll("rect")
             .on("mouseenter", function (event, d) {
-                d3.select(this).attr("opacity", 0.8);
+                d3.select(this)
+                    .transition().duration(200)
+                    .attr("opacity", 0.8)
+                    .attr("filter", "brightness(1.1)");
+
+                tooltip.transition().duration(200).style("opacity", 1);
+                tooltip.html(`
+                    <div class="font-bold border-b border-gray-600 mb-1 pb-1">${d.country}</div>
+                    <div>Weighted Score: <span class="text-blue-300 font-mono">${d.likelihood.toLocaleString()}</span></div>
+                    <div class="text-xs text-gray-400 mt-1">(Likelihood × Relevance)</div>
+                `)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mousemove", function (event) {
+                tooltip
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 28) + "px");
             })
             .on("mouseleave", function (event, d) {
-                d3.select(this).attr("opacity", 1);
-            })
-            .append("title")
-            .text(d => `Country: ${d.country}\nLikelihood: ${d.likelihood.toFixed(2)}`);
+                d3.select(this)
+                    .transition().duration(200)
+                    .attr("opacity", 1)
+                    .attr("filter", "none");
+
+                tooltip.transition().duration(200).style("opacity", 0);
+            });
+
+        return () => {
+            tooltip.remove();
+        }
 
     }, [data]);
 
     return (
-        <div className="bg-light-card dark:bg-dark-card rounded-xl p-4 h-full">
-            <h4 className="text-lg font-bold text-light-text-primary dark:text-dark-text-primary mb-4">Top Likelihood by Country</h4>
+        <div className="bg-light-card dark:bg-dark-card rounded-xl p-4 h-full shadow-lg border border-light-border dark:border-dark-border">
+            <h4 className="text-lg font-bold text-light-text-primary dark:text-dark-text-primary mb-4">Top Countries by Weighted Likelihood</h4>
             <div className="relative h-64 w-full">
                 {(!data || data.length === 0) ? (
                     <div className="flex items-center justify-center h-full text-light-text-secondary dark:text-dark-text-secondary">No Data Available</div>

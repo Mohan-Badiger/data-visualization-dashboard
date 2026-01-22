@@ -25,3 +25,34 @@
 .tooltip {
   @apply absolute z-50 bg-white dark:bg-dark-card p-3 rounded-lg shadow-xl text-sm border border-light-border dark:border-dark-border pointer-events-none opacity-0 transition-opacity whitespace-pre;
 }
+
+
+/* ===== Modern Vertical Scrollbar ===== */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.5) transparent;
+}
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 6px;
+  /* SHORT & THIN */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.5);
+  /* slate */
+  border-radius: 9999px;
+  /* FULL ROUND */
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.8);
+}
