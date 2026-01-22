@@ -100,29 +100,17 @@ const Dashboard = () => {
 
             {/* Charts Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Line Chart - Full Width on Large Screens for better trend visibility */}
-                <div className="lg:col-span-2 bg-light-card dark:bg-dark-card rounded-xl shadow-sm p-1 border border-light-border dark:border-dark-border transition-transform hover:scale-[1.005] duration-300">
+                <div className="bg-light-card dark:bg-dark-card rounded-xl shadow-sm p-1 border border-light-border dark:border-dark-border transition-transform hover:scale-[1.01] duration-300">
                     <LineChart data={data} />
                 </div>
-
-                {/* Bar Chart - Likelihood by Country */}
                 <div className="bg-light-card dark:bg-dark-card rounded-xl shadow-sm p-1 border border-light-border dark:border-dark-border transition-transform hover:scale-[1.01] duration-300">
                     <BarChart data={data} />
                 </div>
-
-                {/* Bubble Chart - Relevance vs Likelihood */}
                 <div className="bg-light-card dark:bg-dark-card rounded-xl shadow-sm p-1 border border-light-border dark:border-dark-border transition-transform hover:scale-[1.01] duration-300">
                     <BubbleChart data={data} />
                 </div>
-
-                {/* Pie Chart 1 - Sector Distribution */}
                 <div className="bg-light-card dark:bg-dark-card rounded-xl shadow-sm p-1 border border-light-border dark:border-dark-border transition-transform hover:scale-[1.01] duration-300">
-                    <PieChart data={data} field="sector" title="Sector Distribution" />
-                </div>
-
-                {/* Pie Chart 2 - Region Distribution (New) */}
-                <div className="bg-light-card dark:bg-dark-card rounded-xl shadow-sm p-1 border border-light-border dark:border-dark-border transition-transform hover:scale-[1.01] duration-300">
-                    <PieChart data={data} field="region" title="Region Distribution" />
+                    <PieChart data={data} />
                 </div>
             </div>
 
@@ -146,16 +134,26 @@ const Dashboard = () => {
                             {data.slice(0, 10).map((item, idx) => (
                                 <tr key={item._id || idx} className="hover:bg-light-bg dark:hover:bg-dark-bg transition-colors">
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-light-text-primary dark:text-dark-text-primary truncate max-w-xs" title={item.title || item.insight}>
-                                        {item.title || item.insight}
+                                        {item.title || item.insight || <span className="text-gray-400 dark:text-gray-600">—</span>}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-light-text-secondary dark:text-dark-text-secondary">{item.sector}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-light-text-secondary dark:text-dark-text-secondary">
-                                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                            {item.topic}
-                                        </span>
+                                        {item.sector || <span className="text-gray-400 dark:text-gray-600">—</span>}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-light-text-secondary dark:text-dark-text-secondary">{item.end_year}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-light-text-secondary dark:text-dark-text-secondary">{item.region}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-light-text-secondary dark:text-dark-text-secondary">
+                                        {item.topic ? (
+                                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                                {item.topic}
+                                            </span>
+                                        ) : (
+                                            <span className="text-gray-400 dark:text-gray-600">—</span>
+                                        )}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-light-text-secondary dark:text-dark-text-secondary">
+                                        {item.end_year || <span className="text-gray-400 dark:text-gray-600">—</span>}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-light-text-secondary dark:text-dark-text-secondary">
+                                        {item.region || <span className="text-gray-400 dark:text-gray-600">—</span>}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

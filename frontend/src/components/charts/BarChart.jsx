@@ -1,14 +1,15 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import * as d3 from 'd3';
+import useInView from '../../hooks/useInView';
 
 const BarChart = ({ data }) => {
-    const svgRef = useRef();
+    const [svgRef, isInView] = useInView({ threshold: 0.1 });
 
     useEffect(() => {
-        if (!data || data.length === 0) {
-            d3.select(svgRef.current).selectAll("*").remove();
-            return;
-        }
+        if (!isInView || !data || data.length === 0) return;
+
+        // Clean up previous renders strictly
+        d3.select(svgRef.current).selectAll("*").remove();
 
         const processedData = d3.rollup(
             data.filter(d => d.country),
@@ -27,18 +28,16 @@ const BarChart = ({ data }) => {
         const height = 300 - margin.top - margin.bottom;
 
         const svgEl = d3.select(svgRef.current);
-        svgEl.selectAll("*").remove();
+        const svg = svgEl
+            .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
 
         // Tooltip
         const tooltip = d3.select("body")
             .append("div")
             .attr("class", "absolute z-50 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 dark:bg-gray-700 pointer-events-none")
             .style("opacity", 0);
-
-        const svg = svgEl
-            .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
-            .append("g")
-            .attr("transform", `translate(${margin.left},${margin.top})`);
 
         const x = d3.scaleBand()
             .range([0, width])
@@ -47,7 +46,7 @@ const BarChart = ({ data }) => {
 
         const maxVal = d3.max(chartData, d => d.likelihood) || 10;
         const y = d3.scaleLinear()
-            .domain([0, maxVal * 1.1]) // Add some padding
+            .domain([0, maxVal * 1.1])
             .range([height, 0]);
 
         // X Axis
@@ -72,8 +71,8 @@ const BarChart = ({ data }) => {
             .attr("y1", "0%")
             .attr("x2", "0%")
             .attr("y2", "100%");
-        gradient.append("stop").attr("offset", "0%").attr("stop-color", "#3B82F6"); // Blue-500
-        gradient.append("stop").attr("offset", "100%").attr("stop-color", "#60A5FA"); // Blue-400
+        gradient.append("stop").attr("offset", "0%").attr("stop-color", "#3B82F6");
+        gradient.append("stop").attr("offset", "100%").attr("stop-color", "#60A5FA");
 
         // Bars
         svg.selectAll("mybar")
@@ -129,9 +128,15 @@ const BarChart = ({ data }) => {
 
         return () => {
             tooltip.remove();
+            // Important: Don't clear chart content here on unmount to preserve 'state' if scrolled out?
+            // Actually React unmounts logic... but visually we want it to stay if we scroll back up? 
+            // With useInView, once valid it sets state true. It *remains* true even if scrolled out (default hook behavior I wrote uses `hasAnimated.current` but `isInView` state stays true? Wait.)
+            // The hook I wrote: `if (entry.isIntersecting && !hasAnimated.current) { setIsInView(true); hasAnimated.current = true; ... }`
+            // So `isInView` will flip to true and STAY true.
+            // This is good. It prevents re-animation.
         }
 
-    }, [data]);
+    }, [data, isInView]);
 
     return (
         <div className="bg-light-card dark:bg-dark-card rounded-xl p-4 h-full shadow-lg border border-light-border dark:border-dark-border">

@@ -1,14 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import * as d3 from 'd3';
+import useInView from '../../hooks/useInView';
 
 const PieChart = ({ data, field = "sector", title = "Sector Distribution" }) => {
-    const svgRef = useRef();
+    const [svgRef, isInView] = useInView({ threshold: 0.1 });
 
     useEffect(() => {
-        if (!data || data.length === 0) {
-            d3.select(svgRef.current).selectAll("*").remove();
-            return;
-        }
+        if (!isInView || !data || data.length === 0) return;
+
+        d3.select(svgRef.current).selectAll("*").remove();
 
         const processedData = d3.rollup(
             data.filter(d => d[field]),
@@ -19,7 +19,6 @@ const PieChart = ({ data, field = "sector", title = "Sector Distribution" }) => 
         let chartData = Array.from(processedData, ([key, count]) => ({ key, count }))
             .sort((a, b) => b.count - a.count);
 
-        // Group smaller slices into "Others" if too many
         if (chartData.length > 5) {
             const top5 = chartData.slice(0, 5);
             const others = chartData.slice(5).reduce((acc, curr) => acc + curr.count, 0);
@@ -34,8 +33,6 @@ const PieChart = ({ data, field = "sector", title = "Sector Distribution" }) => 
         const radius = Math.min(width, height) / 2 - margin;
 
         const svgEl = d3.select(svgRef.current);
-        svgEl.selectAll("*").remove();
-
         const tooltip = d3.select("body")
             .append("div")
             .attr("class", "absolute z-50 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 dark:bg-gray-700 pointer-events-none")
@@ -46,7 +43,6 @@ const PieChart = ({ data, field = "sector", title = "Sector Distribution" }) => 
             .append("g")
             .attr("transform", `translate(${width / 2},${height / 2})`);
 
-        // Use a color scale that supports more distinct values
         const color = d3.scaleOrdinal()
             .domain(chartData.map(d => d.key))
             .range(d3.schemeSet3);
@@ -58,12 +54,12 @@ const PieChart = ({ data, field = "sector", title = "Sector Distribution" }) => 
         const data_ready = pie(chartData);
 
         const arc = d3.arc()
-            .innerRadius(60) // Donut style
+            .innerRadius(60)
             .outerRadius(radius);
 
         const arcHover = d3.arc()
             .innerRadius(60)
-            .outerRadius(radius + 10); // Expands on hover
+            .outerRadius(radius + 10);
 
         const slices = svg.selectAll('slices')
             .data(data_ready)
@@ -90,7 +86,7 @@ const PieChart = ({ data, field = "sector", title = "Sector Distribution" }) => 
         slices.on("mouseenter", function (event, d) {
             d3.select(this)
                 .transition().duration(300)
-                .attr("d", arcHover) // Expand
+                .attr("d", arcHover)
                 .style("opacity", 1)
                 .attr("filter", "brightness(1.1)");
 
@@ -110,7 +106,7 @@ const PieChart = ({ data, field = "sector", title = "Sector Distribution" }) => 
             .on("mouseleave", function (event, d) {
                 d3.select(this)
                     .transition().duration(300)
-                    .attr("d", arc) // Contract
+                    .attr("d", arc)
                     .style("opacity", 0.9)
                     .attr("filter", "none");
 
@@ -119,7 +115,7 @@ const PieChart = ({ data, field = "sector", title = "Sector Distribution" }) => 
 
         return () => tooltip.remove();
 
-    }, [data, field]);
+    }, [data, isInView, field]);
 
     return (
         <div className="bg-light-card dark:bg-dark-card rounded-xl p-4 flex flex-col items-center h-full shadow-lg border border-light-border dark:border-dark-border">

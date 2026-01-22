@@ -7,28 +7,33 @@ export default {
     theme: {
         extend: {
             colors: {
-                // Professional Color System
-                light: {
-                    bg: '#F3F4F6',        // Gray-100 (Soft Neutral)
-                    card: '#FFFFFF',      // White (Elevated Surface)
+                // Semantic Semantic Colors mapped to CSS Variables
+                app: {
+                    bg: 'var(--color-bg)',
+                    card: 'var(--color-card)',
                     text: {
-                        primary: '#1F2937', // Gray-800 (Near Black)
-                        secondary: '#6B7280' // Gray-500 (Muted)
+                        primary: 'var(--color-text-primary)',
+                        secondary: 'var(--color-text-secondary)'
                     },
-                    border: '#E5E7EB',    // Gray-200 (Subtle)
+                    border: 'var(--color-border)',
+                },
+
+                // Legacy support (optional, can map to vars too if needed, but keeping for direct specific use)
+                light: {
+                    bg: '#F3F4F6',
+                    card: '#FFFFFF',
+                    text: { primary: '#1F2937', secondary: '#6B7280' },
+                    border: '#E5E7EB',
                 },
                 dark: {
-                    bg: '#0F172A',        // Slate-900 (Deep Neutral)
-                    card: '#1E293B',      // Slate-800 (Lighter than bg)
-                    text: {
-                        primary: '#F8FAFC', // Slate-50 (Near White)
-                        secondary: '#94A3B8' // Slate-400 (Muted)
-                    },
-                    border: '#334155',    // Slate-700 (Subtle)
+                    bg: '#0F172A',
+                    card: '#1E293B',
+                    text: { primary: '#F8FAFC', secondary: '#94A3B8' },
+                    border: '#334155',
                 },
                 primary: {
-                    DEFAULT: '#3B82F6',  // Blue-500
-                    hover: '#2563EB',    // Blue-600
+                    DEFAULT: '#3B82F6',
+                    hover: '#2563EB',
                 }
             },
             fontFamily: {

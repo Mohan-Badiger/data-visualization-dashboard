@@ -1,14 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import * as d3 from 'd3';
+import useInView from '../../hooks/useInView';
 
 const LineChart = ({ data }) => {
-    const svgRef = useRef();
+    const [svgRef, isInView] = useInView({ threshold: 0.1 });
 
     useEffect(() => {
-        if (!data || data.length === 0) {
-            d3.select(svgRef.current).selectAll("*").remove();
-            return;
-        }
+        if (!isInView || !data || data.length === 0) return;
+
+        d3.select(svgRef.current).selectAll("*").remove();
 
         const processedData = d3.rollup(
             data.filter(d => d.end_year && d.intensity),
@@ -26,7 +26,6 @@ const LineChart = ({ data }) => {
         const height = 300 - margin.top - margin.bottom;
 
         const svgEl = d3.select(svgRef.current);
-        svgEl.selectAll("*").remove();
 
         // Create Tooltip
         const tooltip = d3.select("body")
@@ -140,12 +139,11 @@ const LineChart = ({ data }) => {
                 tooltip.transition().duration(200).style("opacity", 0);
             });
 
-        // Cleanup function to remove tooltip from body
         return () => {
             tooltip.remove();
         };
 
-    }, [data]);
+    }, [data, isInView]);
 
     return (
         <div className="bg-light-card dark:bg-dark-card rounded-xl p-4 h-full shadow-lg border border-light-border dark:border-dark-border">

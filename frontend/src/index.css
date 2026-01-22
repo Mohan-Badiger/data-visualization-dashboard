@@ -3,14 +3,40 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Light Theme Tokens */
+    --color-bg: #F3F4F6;
+    --color-card: #FFFFFF;
+    --color-text-primary: #1F2937;
+    --color-text-secondary: #6B7280;
+    --color-border: #E5E7EB;
+
+    /* Primary */
+    --color-primary: #3B82F6;
+    --color-primary-hover: #2563EB;
+  }
+
+  .dark {
+    /* Dark Theme Tokens */
+    --color-bg: #0F172A;
+    --color-card: #1E293B;
+    --color-text-primary: #F8FAFC;
+    --color-text-secondary: #94A3B8;
+    --color-border: #334155;
+  }
+
   body {
-    @apply bg-light-bg text-light-text-primary dark:bg-dark-bg dark:text-dark-text-primary transition-colors duration-200;
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+    /* Removed transition-colors duration-200 to prevent lag/staggering. 
+       Can be re-added via a controlled class if specific fades are needed. */
   }
 }
 
-/* Custom D3 Styles - Theme Aware */
+/* Custom D3 Styles - Theme Aware - utilizing CSS vars via utility classes or direct */
 .chart-axis text {
   @apply fill-gray-500 dark:fill-gray-400;
+  /* Keeping explicit utility for charts as they are less structural */
 }
 
 .chart-axis line,
@@ -23,22 +49,20 @@
 }
 
 .tooltip {
-  @apply absolute z-50 bg-white dark:bg-dark-card p-3 rounded-lg shadow-xl text-sm border border-light-border dark:border-dark-border pointer-events-none opacity-0 transition-opacity whitespace-pre;
+  @apply absolute z-50 p-3 rounded-lg shadow-xl text-sm border pointer-events-none opacity-0 transition-opacity whitespace-pre;
+  background-color: var(--color-card);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
 }
 
-
-/* ===== Modern Vertical Scrollbar ===== */
-
-/* Firefox */
+/* Scrollbar */
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(100, 116, 139, 0.5) transparent;
 }
 
-/* Chrome, Edge, Safari */
 ::-webkit-scrollbar {
   width: 6px;
-  /* SHORT & THIN */
 }
 
 ::-webkit-scrollbar-track {
@@ -47,12 +71,15 @@
 
 ::-webkit-scrollbar-thumb {
   background: rgba(100, 116, 139, 0.5);
-  /* slate */
   border-radius: 9999px;
-  /* FULL ROUND */
   transition: background 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 116, 139, 0.8);
+}
+
+/* Utility to disable transitions globally during theme switch */
+.disable-transitions * {
+  transition: none !important;
 }

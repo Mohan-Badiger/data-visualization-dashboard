@@ -1,26 +1,24 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import * as d3 from 'd3';
+import useInView from '../../hooks/useInView';
 
 const BubbleChart = ({ data }) => {
-    const svgRef = useRef();
+    const [svgRef, isInView] = useInView({ threshold: 0.1 });
 
     useEffect(() => {
-        if (!data || data.length === 0) {
-            d3.select(svgRef.current).selectAll("*").remove();
-            return;
-        }
+        if (!isInView || !data || data.length === 0) return;
 
         const chartData = data.filter(d => d.relevance && d.likelihood && d.intensity && d.topic).slice(0, 50);
 
         if (chartData.length === 0) return;
+
+        d3.select(svgRef.current).selectAll("*").remove();
 
         const margin = { top: 20, right: 30, bottom: 40, left: 40 };
         const width = 600 - margin.left - margin.right;
         const height = 300 - margin.top - margin.bottom;
 
         const svgEl = d3.select(svgRef.current);
-        svgEl.selectAll("*").remove();
-
         const tooltip = d3.select("body")
             .append("div")
             .attr("class", "absolute z-50 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 dark:bg-gray-700 pointer-events-none")
@@ -41,7 +39,7 @@ const BubbleChart = ({ data }) => {
 
         const z = d3.scaleLinear()
             .domain([0, d3.max(chartData, d => d.intensity) || 10])
-            .range([4, 25]); // Slightly larger bubbles
+            .range([4, 25]);
 
         const myColor = d3.scaleOrdinal()
             .domain(chartData.map(d => d.topic))
@@ -84,7 +82,7 @@ const BubbleChart = ({ data }) => {
             d3.select(this)
                 .transition().duration(200)
                 .style("fill-opacity", 1)
-                .attr("stroke", "#333") // Highlight border
+                .attr("stroke", "#333")
                 .attr("stroke-width", 2);
 
             tooltip.transition().duration(200).style("opacity", 1);
@@ -116,7 +114,7 @@ const BubbleChart = ({ data }) => {
 
         return () => tooltip.remove();
 
-    }, [data]);
+    }, [data, isInView]);
 
     return (
         <div className="bg-light-card dark:bg-dark-card rounded-xl p-4 h-full shadow-lg border border-light-border dark:border-dark-border">
