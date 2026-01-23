@@ -2,15 +2,19 @@ import axios from 'axios';
 
 // Base API instance for Insights
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || '/api/insights', // Default base for insights
+    baseURL: import.meta.env.VITE_API_URL
+        ? `${import.meta.env.VITE_API_URL}/api/insights`
+        : '/api/insights',
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
-// Separate instance or direct call for Filters if mount point differs
+// Separate instance or direct call for Filters
 const filterApi = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || '/api', // Base /api
+    baseURL: import.meta.env.VITE_API_URL
+        ? `${import.meta.env.VITE_API_URL}/api`
+        : '/api',
     headers: {
         'Content-Type': 'application/json',
     },
