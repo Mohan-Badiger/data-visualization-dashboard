@@ -78,3 +78,6 @@ A comprehensive full-stack dashboard utilizing the MERN stack (MongoDB, Express,
 - `frontend/src/components/charts`: D3 visualization components.
 - `frontend/src/components/filters`: Filter UI components.
 - `frontend/src/pages`: Main dashboard view.
+
+Developed By
+Mohan Badiger
