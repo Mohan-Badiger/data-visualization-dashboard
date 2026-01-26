@@ -8,7 +8,6 @@ const BarChart = ({ data }) => {
     useEffect(() => {
         if (!isInView || !data || data.length === 0) return;
 
-        // Clean up previous renders strictly
         d3.select(svgRef.current).selectAll("*").remove();
 
         const processedData = d3.rollup(
@@ -128,12 +127,6 @@ const BarChart = ({ data }) => {
 
         return () => {
             tooltip.remove();
-            // Important: Don't clear chart content here on unmount to preserve 'state' if scrolled out?
-            // Actually React unmounts logic... but visually we want it to stay if we scroll back up? 
-            // With useInView, once valid it sets state true. It *remains* true even if scrolled out (default hook behavior I wrote uses `hasAnimated.current` but `isInView` state stays true? Wait.)
-            // The hook I wrote: `if (entry.isIntersecting && !hasAnimated.current) { setIsInView(true); hasAnimated.current = true; ... }`
-            // So `isInView` will flip to true and STAY true.
-            // This is good. It prevents re-animation.
         }
 
     }, [data, isInView]);

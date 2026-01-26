@@ -6,27 +6,16 @@ const Insight = require('../models/Insight.model');
 exports.getInsights = async (req, res) => {
     try {
         const {
-            end_year,
-            topic,
-            sector,
-            region,
-            pestle,
-            source,
-            swot,
-            country,
-            city,
-            limit
+            end_year, topic, sector, region, pestle,
+            source, swot, country, city, limit
         } = req.query;
 
         let query = {};
 
-        // Helper to add filter if valid
         const addFilter = (field, value, isExact = false) => {
             if (value !== undefined && value !== null && value !== "All" && value !== "") {
                 if (isExact) {
-                    // Try parsing number if it looks like one, otherwise string
-                    // Since end_year is Number in schema, strict match requires Number.
-                    // But query params are strings.
+                    // end_year and start_year must be numbers
                     if (field === 'end_year' || field === 'start_year') {
                         query[field] = Number(value);
                     } else {
@@ -68,7 +57,6 @@ exports.getInsights = async (req, res) => {
 // @access  Public
 exports.getFilters = async (req, res) => {
     try {
-        // Use $facet to get all unique values in one database call
         const filters = await Insight.aggregate([
             {
                 $facet: {
@@ -123,17 +111,16 @@ exports.getFilters = async (req, res) => {
 
         const facetResult = filters[0];
 
-        // Helper to unwrap objects { _id: "Value" } -> "Value"
         const unwrap = (arr) => {
             if (!arr) return [];
             return arr
                 .map(item => item._id)
                 .filter(val => val !== null && val !== "")
-                .sort(); // Sort again just in case (JS sort vs Mongo sort)
+                .sort();
         };
 
         const responseData = {
-            end_years: unwrap(facetResult.end_years).sort((a, b) => b - a), // Numeric sort for years
+            end_years: unwrap(facetResult.end_years).sort((a, b) => b - a),
             topics: unwrap(facetResult.topics),
             sectors: unwrap(facetResult.sectors),
             regions: unwrap(facetResult.regions),
@@ -144,7 +131,6 @@ exports.getFilters = async (req, res) => {
             swots: unwrap(facetResult.swots)
         };
 
-        // RETURN PLAIN OBJECT directly as requested
         res.status(200).json(responseData);
 
     } catch (err) {

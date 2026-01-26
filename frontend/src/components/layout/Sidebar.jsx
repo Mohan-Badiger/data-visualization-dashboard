@@ -8,8 +8,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 
     const navigation = [
         { name: 'Dashboard', href: '/', icon: HomeIcon },
-        { name: 'Analytics', href: '/analytics', icon: ChartBarIcon, current: false },
-        { name: 'Reports', href: '/reports', icon: PresentationChartLineIcon, current: false },
+        // { name: 'Analytics', href: '/analytics', icon: ChartBarIcon, current: false },
+        // { name: 'Reports', href: '/reports', icon: PresentationChartLineIcon, current: false },
     ];
 
     const classNames = (...classes) => {

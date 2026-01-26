@@ -71,7 +71,7 @@ const PieChart = ({ data, field = "sector", title = "Sector Distribution" }) => 
             .style("stroke-width", "2px")
             .style("opacity", 0.9);
 
-        // Entry Animation
+        // Entry
         slices.transition()
             .duration(1000)
             .attrTween("d", function (d) {
@@ -82,7 +82,7 @@ const PieChart = ({ data, field = "sector", title = "Sector Distribution" }) => 
                 }
             });
 
-        // Hover Effect
+        // Interactive slices
         slices.on("mouseenter", function (event, d) {
             d3.select(this)
                 .transition().duration(300)

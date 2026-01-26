@@ -63,7 +63,7 @@ const BubbleChart = ({ data }) => {
             .append("circle")
             .attr("cx", d => x(d.relevance))
             .attr("cy", d => y(d.likelihood))
-            .attr("r", 0) // Start at 0 for animation
+            .attr("r", 0)
             .style("fill", d => myColor(d.topic))
             .style("opacity", "0.7")
             .attr("stroke", "white")

@@ -99,14 +99,12 @@ const Dashboard = () => {
 
             {loading && <div className="text-center py-10 text-primary font-medium">Loading data...</div>}
 
-            {/* Charts Grid */}
+            {/* Dashboard Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Row 1: Intensity Trend (Full Width) */}
                 <div className="lg:col-span-2 bg-light-card dark:bg-dark-card rounded-xl shadow-sm p-1 border border-light-border dark:border-dark-border transition-transform hover:scale-[1.005] duration-300">
                     <LineChart data={data} />
                 </div>
 
-                {/* Row 2 */}
                 <div className="bg-light-card dark:bg-dark-card rounded-xl shadow-sm p-1 border border-light-border dark:border-dark-border transition-transform hover:scale-[1.01] duration-300">
                     <BarChart data={data} />
                 </div>
@@ -114,11 +112,9 @@ const Dashboard = () => {
                     <BubbleChart data={data} />
                 </div>
 
-                {/* Row 3 */}
                 <div className="bg-light-card dark:bg-dark-card rounded-xl shadow-sm p-1 border border-light-border dark:border-dark-border transition-transform hover:scale-[1.01] duration-300">
                     <PieChart data={data} />
                 </div>
-                {/* New 5th Chart: Region Distribution */}
                 <div className="bg-light-card dark:bg-dark-card rounded-xl shadow-sm p-1 border border-light-border dark:border-dark-border transition-transform hover:scale-[1.01] duration-300">
                     <RegionChart data={data} />
                 </div>

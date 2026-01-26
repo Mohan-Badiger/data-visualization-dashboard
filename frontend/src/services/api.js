@@ -24,10 +24,6 @@ export const getInsights = async (filters = {}) => {
     try {
         const cleanFilters = {};
         for (const key in filters) {
-            // Strictly exclude All and empty strings.
-            // Data import now ensures years are numbers, so strings '2018' from params are fine (express/mongo type casting handles it or regex)
-            // But we should send numbers if possible.
-            // Actually URL params are always strings.
             if (filters[key] && filters[key] !== "All" && filters[key] !== "") {
                 cleanFilters[key] = filters[key];
             }

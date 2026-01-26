@@ -6,9 +6,6 @@ const connectDB = require('./config/db');
 dotenv.config();
 
 // Connect to database
-// connectDB is called here or in app.js? Typically here before listening or inside app if separate. 
-// I put connectDB in importData.js, but for server it should be here.
-// Let's call it here.
 connectDB();
 
 const PORT = process.env.PORT || 5000;

@@ -46,14 +46,14 @@ const LineChart = ({ data }) => {
             .domain([0, d3.max(chartData, d => d.intensity) || 10])
             .range([height, 0]);
 
-        // Add X Gridlines (Subtle)
+        // Add X Gridlines
         svg.append("g")
             .attr("class", "chart-grid opacity-10")
             .attr("transform", `translate(0,${height})`)
             .call(d3.axisBottom(x).tickSize(-height).tickFormat("").ticks(5))
             .select(".domain").remove();
 
-        // Add Y Gridlines (Subtle)
+        // Add Y Gridlines
         svg.append("g")
             .attr("class", "chart-grid opacity-10")
             .call(d3.axisLeft(y).tickSize(-width).tickFormat("").ticks(5))
@@ -101,14 +101,14 @@ const LineChart = ({ data }) => {
             .attr("stroke", "#fff")
             .attr("stroke-width", 2)
             .attr("class", "dark:stroke-dark-card cursor-pointer")
-            .attr("opacity", 0); // Start hidden for animation
+            .attr("opacity", 0);
 
         dots.transition()
-            .delay((d, i) => 1000 + i * 50) // Staggered appearance after line starts
+            .delay((d, i) => 1000 + i * 50)
             .duration(300)
             .attr("opacity", 1);
 
-        // Tooltip Interaction
+        // Interact
         dots.on("mouseenter", function (event, d) {
             d3.select(this)
                 .transition().duration(200)
