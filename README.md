@@ -13,7 +13,7 @@ A comprehensive full-stack dashboard utilizing the MERN stack (MongoDB, Express,
 
 - **Backend**: Node.js, Express, MongoDB (Mongoose)
 - **Frontend**: React (Vite), D3.js, Tailwind CSS
-- **Tools**: Axios, Headless UI, Heroicons, Nodemon
+- **Tools**: Axios, Headless UI
 
 ## Setup Instructions
 
@@ -78,6 +78,3 @@ A comprehensive full-stack dashboard utilizing the MERN stack (MongoDB, Express,
 - `frontend/src/components/charts`: D3 visualization components.
 - `frontend/src/components/filters`: Filter UI components.
 - `frontend/src/pages`: Main dashboard view.
-
-Developed By
-Mohan Badiger
